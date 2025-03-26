@@ -6,27 +6,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="script.js" defer></script>
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
     <form id="tomoForm">
         <label for="name">Name</label>
-        <input type="text" id="name" name="name">
+        <input type="text" id="name" name="name" required>
 
         <label for="animalType">Animal type</label>
-        <select name="animalType" id="animalType">
-            <option value="dog">Dog</option>
-            <option value="cat">Cat</option>
-            <option value="mouse">Mouse</option>
-            <option value="otter">Otter</option>
+        <select name="animalType" id="animalType" required>
+            <option value="" disabled selected>Animal Type</option>
+            <option value="Dog">Dog</option>
+            <option value="Cat">Cat</option>
+            <option value="Mouse">Mouse</option>
+            <option value="Otter">Otter</option>
         </select>
-
-        <section id="tomo-container">
-
-        </section>
 
         <button type="submit">Submit</button>
     </form>
+
+    <section id="tomo-info">
+        <ul id="tomo-container">
+
+        </ul>
+
+        <div id="tomo-log-container">
+
+            <div class="autoscroll">
+                <div id="tomo-log">
+
+                </div>
+            </div>
+        </div>
+    </section>
+
 </body>
 
 </html>

@@ -1,4 +1,6 @@
-let tomogotchiArr = [];
+let tomoArr = [];
+let idNum = 0;
+const tomoForm = document.getElementById("tomoForm");
 
 class Tomogotchi {
     constructor(name, animalType) {
@@ -7,6 +9,18 @@ class Tomogotchi {
         this.energy = 50;
         this.fullness = 50;
         this.happiness = 50;
+        this.index = idNum++;
+
+        this.startTimer();
+    }
+
+    startTimer() {
+        this.timer = setInterval(() => {
+            this.energy = this.maxminVal(this.energy - 15);
+            this.fullness = this.maxminVal(this.fullness - 15);
+            this.happiness = this.maxminVal(this.happiness - 15);
+            this.runAway();
+        }, 10000);
     }
 
     maxminVal(value) {
@@ -17,7 +31,7 @@ class Tomogotchi {
         this.energy = this.maxminVal(this.energy + 40);
         this.happiness = this.maxminVal(this.happiness - 10);
         this.fullness = this.maxminVal(this.fullness - 10);
-        console.log(`You took a nap with ${this.name}.`)
+        this.log("nap")
         this.runAway();
     }
 
@@ -25,7 +39,7 @@ class Tomogotchi {
         this.energy = this.maxminVal(this.energy - 10);
         this.happiness = this.maxminVal(this.happiness + 30);
         this.fullness = this.maxminVal(this.fullness - 10);
-        console.log(`You played with ${this.name}!`)
+        this.log("play")
         this.runAway();
     }
 
@@ -33,47 +47,103 @@ class Tomogotchi {
         this.energy = this.maxminVal(this.energy - 15);
         this.happiness = this.maxminVal(this.happiness + 5);
         this.fullness = this.maxminVal(this.fullness + 30);
-        console.log(`You ate with ${this.name}.`)
+        this.log("eat")
         this.runAway();
     }
 
-    runAway() {
-        if (this.energy === 0 || this.happiness === 0 || this.fullness === 0) {
-            console.log(`${this.name} has run away because they are too tired, sad, or hungry!`);
+    log(action) {
+        let tomoLog = document.getElementById("tomo-log");
+        let newLog = document.createElement("p");
 
-            const index = tomogotchiArr.indexOf(this);
-            if (index > -1) {
-                tomogotchiArr.splice(index, 1);
-            }
+        // Set the text content based on the action
+        if (action === "nap") {
+            newLog.innerHTML = `You took a nap with ${this.name}.`;
+        } else if (action === "play") {
+            newLog.innerHTML = `You played with ${this.name}!`;
+        } else if (action === "eat") {
+            newLog.innerHTML = `You ate with ${this.name}.`;
+        } else {
+            newLog.innerHTML = `${this.name} ran away because they were too tired, sad, or hungry!`;
+        }
+
+        // Append the new log entry to the log container
+        tomoLog.appendChild(newLog);
+
+        // Set a margin (e.g., 30px) from the bottom to trigger auto-scroll
+        const margin = 30;
+
+        // Check if we are within the margin of the bottom
+        const isNearBottom = (tomoLog.scrollHeight - tomoLog.scrollTop - tomoLog.clientHeight) <= margin;
+
+        // If we're near the bottom (within margin), scroll to the bottom
+        if (isNearBottom) {
+            tomoLog.scrollTop = tomoLog.scrollHeight; // Scroll to the bottom
         }
     }
+
+
+
+
+    runAway() {
+        if (this.energy === 0 || this.happiness === 0 || this.fullness === 0) {
+            this.log(null)
+            clearInterval(this.timer);
+            const index = tomoArr.findIndex(tomo => tomo.index === this.index);
+            if (index > -1) {
+                tomoArr.splice(index, 1);
+            }
+        }
+        displayTomo();
+    }
+
     display(tomoContainer) {
         let tomoElement = document.createElement("li");
         tomoElement.classList.add("tomo-item");
 
         tomoElement.innerHTML = `
-            ${this.name}
-			`;
+        <div class="tomo-details">
+            <p>${this.name}</p>
+            <p>${this.animalType}</p>
+            <p>Energy: <span class="energy">${this.energy}</span></p>
+            <p>Happiness: <span class="happiness">${this.happiness}</span></p>
+            <p>Fullness: <span class="fullness">${this.fullness}</span></p>
+        </div>
+        <div class="tomo-actions">
+            <button class="nap-btn">Nap</button>
+            <button class="play-btn">Play</button>
+            <button class="eat-btn">Eat</button>
+        </div>
+        `;
+
+        // Attach button event listeners inside the object
+        tomoElement.querySelector(".nap-btn").addEventListener("click", () => this.nap());
+        tomoElement.querySelector(".play-btn").addEventListener("click", () => this.play());
+        tomoElement.querySelector(".eat-btn").addEventListener("click", () => this.eat());
 
         tomoContainer.appendChild(tomoElement);
     }
 }
 
-
-tomoForm.addEventListener("submit", async (e) => {
+tomoForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const name = document.getElementById("name").value;
-    const animalType = document.getElementById("animalType").value;
-    const newTomogotchi = new Tomogotchi(name, animalType);
-    tomogotchiArr.push(newTomogotchi);
-    console.log(tomogotchiArr);
-    displayTomo();
-})
+    if (tomoArr.length < 4) {
+        const name = document.getElementById("name").value;
+        const animalType = document.getElementById("animalType").value;
+
+        const newTomogotchi = new Tomogotchi(name, animalType);
+        tomoArr.push(newTomogotchi);
+
+        displayTomo();
+    } else {
+        alert("You already have 4 tomogotchis, take care of them instead of adding more...")
+    }
+    tomoForm.reset();
+});
 
 function displayTomo() {
     let tomoContainer = document.getElementById("tomo-container");
     tomoContainer.innerHTML = "";
-    tomogotchiArr.forEach((tomo) => {
+    tomoArr.forEach((tomo) => {
         tomo.display(tomoContainer);
-    })
+    });
 }
