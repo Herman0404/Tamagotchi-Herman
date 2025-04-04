@@ -102,8 +102,8 @@ class Tomogotchi {
 
         tomoElement.innerHTML = `
         <div class="tomo-details">
-            <p>${this.name}</p>
-            <p>${this.animalType}</p>
+            <h2>${this.name}</h2>
+            <h3>${this.animalType}</h3>
             <p>Energy: <span class="energy">${this.energy}</span></p>
             <p>Happiness: <span class="happiness">${this.happiness}</span></p>
             <p>Fullness: <span class="fullness">${this.fullness}</span></p>
